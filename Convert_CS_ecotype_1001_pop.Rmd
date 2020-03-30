@@ -1,0 +1,39 @@
+---
+title: "Convert_CS_Ecotype_1001_pop"
+author: "Marianne Emery"
+date: "3/26/2020"
+output: html_document
+---
+
+```{r}
+rm(list = ls())
+
+library(readxl)
+#library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+
+#read in ref sheet
+dat_1001 <- read.csv("/Volumes/AngeloviciLab/Personal Folders/Marianne/Database/reference_sheets/1001_pop_ecotypes_MLE.csv", header = T)
+
+
+#read in data to convert (CHANGE AS NEEDED)
+dat <- read.csv("~/Desktop/GSLs_row_data.csv", header = T)
+
+```
+
+
+```{r}
+
+#join tables
+
+x <- right_join(dat_1001, dat, by=c("CS_number_1001" = "Line"))
+
+
+write.csv(x, file="~/Desktop/GSLs_row_data_ecotype.csv", row.names = FALSE)
+
+
+```
+
