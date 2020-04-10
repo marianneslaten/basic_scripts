@@ -1,0 +1,71 @@
+---
+title: "Correlation"
+author: "Marianne Emery"
+date: "4/9/2020"
+output: html_document
+---
+
+```{r}
+rm(list = ls())
+
+library(tidyverse)
+library(readxl)
+
+```
+
+```{r}
+folder_path <- file.path("/Volumes/AngeloviciLab/Personal Folders/Marianne/GSL_1001/FAA_1001_GSL_1001/GluFam/")
+
+dat <- read.csv(file = file.path(folder_path, "1001_FAA_R1_with_GluFamRatios_GSLs_profiles_parsed_360_combined.csv"), header = TRUE, stringsAsFactors = FALSE, check.names = FALSE)
+```
+
+
+
+Correlation
+```{r}
+#FAA from 1001 population that overlap with the 360
+
+#----------
+# name1 = "X_7MSO"
+# x <- dat[, c(5:8, 24:40)]
+# y <- as.data.frame(dat[, name1])
+# names(y)[1] <- name1
+# 
+# gsl1 <- cbind(x,y)
+# 
+# #remove NAs
+# gsl1 <- na.omit(gsl1)
+# 
+# output1 <- cor(gsl1[, 1:21], gsl1[, 22], method = "spearman")
+#----------
+
+
+
+mylist <- list()
+
+aa <- dat[, c(5:8, 24:40)]
+
+
+for (ii in 50:ncol(dat)) {
+  y <- as.data.frame(dat[, ii])
+  #print (ii)
+  #print (y)
+  gsl <- cbind(aa,y)
+  
+  gsl <- na.omit(gsl)       #remove NAs
+
+ output1 <- cor(gsl[, 1:21], gsl[, 22], method = "spearman")
+ colnames(output1) <- colnames(dat[ii])
+ output1 <- as.data.frame(output1)
+ print(output1)
+ 
+ mylist[[ii -49]] <- output1   #put all vectors in the list
+  
+}
+
+corr_df <- do.call("cbind", mylist)    #combine all vectors into a matrix
+
+
+#write.csv(corr_df, file = "/Users/mlemery/Desktop/1001_R1_FAA_vs_GSL_spearman_correlation.csv", row.names = TRUE)
+
+```
