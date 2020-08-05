@@ -1,0 +1,73 @@
+---
+title: "Anova"
+author: "Marianne Emery"
+date: "4/14/2020"
+output: html_document
+---
+
+Packages
+```{r}
+rm(list = ls())
+
+library(readxl)
+library(car)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+```
+
+Read in data
+```{r}
+
+gsl_clades <- read_excel("/Users/mlemery/Desktop/BCAA_GWAS/GSL_clades.xlsx", sheet = "GSL_clades")
+
+aa_dat <- read.csv(file = "/Volumes/AngeloviciLab/Personal Folders/Marianne/1001_Arabidopsis/data_removed_48_lines/FAA_BLUP_BLUE/03_22_2020_Arabidopsis_1001_FAA_bcaa_fam_BLUP.csv", header = TRUE, stringsAsFactors = FALSE)
+
+val <- as.data.frame(aa_dat[,c(1,ncol(aa_dat))])
+colnames(val) <- c("Ecotype_ID_1001", "Val")
+
+
+#combine data tables based on accession ID
+dat <- left_join(gsl_clades, arab_dat, by= c("Accession" = "Ecotype_ID_1001"))
+```
+
+
+Visualize data
+```{r}
+ggplot(dat, aes( x = XXX,
+                 y = XXX,
+                 color = XXX,
+                 group = XXX)) +
+  geom_point(position = position_jitter(width = 0.1)) +
+  stat_summary(fun.y = mean, geom = "point", pch = 12, size = 5) +
+  stat_summary(fun.y = mean, geom = "line")
+
+
+```
+
+
+Two-way Factorial ANOVA
+```{r}
+fm <- lm(Val ~ Clade, data = dat)
+
+summary(fm)
+
+anova(fm, type = "III")
+
+#obs in each clade
+dat %>% group_by(Clade) >%> tally()
+
+```
+
+
+Group means
+```{r}
+dat %>% group_by(clade) %>%
+  summarize(mean = mean(Val))
+
+```
+
+
+
+

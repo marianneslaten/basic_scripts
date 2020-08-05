@@ -1,0 +1,67 @@
+---
+title: "PCA"
+author: "Marianne Emery"
+date: "4/10/2020"
+output: html_document
+---
+
+```{r}
+rm(list = ls())
+
+library(readxl)
+library(tidyverse)
+library(devtools)
+library(ggbiplot)
+library(GGally)
+
+library(cowplot)
+library(smatr)
+library(factoextra)
+library(rgl)
+library(pls)
+library(knitr)
+library(grid)
+library(gridExtra)
+
+
+```
+
+```{r}
+folder_path <- file.path("/Volumes/AngeloviciLab/Personal Folders/Marianne/")
+
+dat <- read.csv(file = file.path(folder_path, "1001_Arabidopsis/data_removed_48_lines/FAA_RAW/03_22_2020_Arabidopsis_1001_FAA_bcaa_fam_dat.csv"), header = TRUE, stringsAsFactors = FALSE, check.names = FALSE)
+
+```
+
+## Multiple regression makes a composite variable
+
+```{r echo=FALSE, warning = FALSE}
+faa_dat <- dat
+M <- faa_dat %>% 
+  select(Ile, Leu, Val, Total) %>%
+  drop_na() %>%
+  as.data.frame()
+names(M) <- c("Ile", "Leu", "Val", "Total")
+
+ggscatmat(M)
+
+```
+
+```{r}
+
+#--->change respective column numbers as necessary
+#FAA_pca <- prcomp(dat[,c(5:8)], center = TRUE, scale. = TRUE)
+FAA_pca <- prcomp(dat[,c("Ile", "Leu", "Val", "Total")], center = TRUE, scale. = TRUE)
+
+
+summary(FAA_pca)
+str(FAA_pca)
+
+#extract PC scores
+PC <- data.frame(pc1 = FAA_pca$x[, 1], pc2 = FAA_pca$x[, 2])
+
+write.csv(PC, file= "Arabidopsis_1001_FAA_bcaa_fam_PC1_PC2.csv")
+
+```
+
+

@@ -1,0 +1,99 @@
+---
+title: 'GWAS w/ changing # of SNPs and sample size'
+author: "Marianne Emery"
+date: "1/29/2020"
+output: html_document
+---
+
+
+```{r}
+#Clean the workspace
+rm(list = ls())
+
+library(dplyr) 
+library(tidyverse)
+```
+
+
+Read in files
+```{r}
+pheno <- read.csv("~/Desktop/raw_FAA_1001_full_dataset.csv", header=T)
+
+
+chr1_snp <- read.table("/home/memery/GWAS_pipeline/ref_files_GWAS1001/hapmap_rand/Chr1.hmp.txt", header = T, sep ="\t", fill=TRUE, stringsAsFactors = F, check.names = F, comment.char = "")
+
+
+#chr2_snp
+#chr3_snp
+#chr4_snp
+#chr5_snp
+
+
+```
+
+
+
+Randomly select 450 individuals
+```{r}
+
+#the random # seed
+set.seed(7060)
+
+n <- 450
+
+
+#select only accessions from population1 and population2
+pheno_pop1 <- pheno[pheno$Population == 1, ]
+pheno_pop1_Line <- as.data.frame(pheno_pop1$Line)
+colnames(pheno_pop1_Line) <- "Line"
+
+pheno_pop2 <- pheno[pheno$Population == 2, ]
+pheno_pop2_Line <- as.data.frame(pheno_pop2$Line)
+colnames(pheno_pop2_Line) <- "Line"
+
+#find which accession are found in both Pop1 and Pop2
+temp <- inner_join(pheno_pop1_Line, pheno_pop2_Line, by = "Line")
+
+
+#randomly select n samples from pop1 of temp data
+temp_rand <- as.data.frame(temp[sample(nrow(temp), n), ])
+colnames(temp_rand) <- "Line"
+
+
+#select same random Lines in pop1 and pop2 and combine datasets
+pheno_pop1_rand <- left_join(temp_rand, pheno_pop1, by = "Line")
+pheno_pop2_rand <- left_join(temp_rand, pheno_pop2, by = "Line")
+
+pheno_final_rand <- rbind(pheno_pop1_rand, pheno_pop2_rand)
+
+
+write.csv(pheno_final_rand, "/Users/mlemery/Desktop/FAA_1&2_1001_rand450.csv", row.names = F)
+
+```
+
+
+# SNPs in each chr file
+```{r}
+#####------> pheno needs to be changed to chr1
+num_chr1 <- ncol(chr1_snp) -1
+
+```
+
+
+
+Randomly select 500,000 SNPs
+Calculate the number of SNPs in each chr file and take half
+```{r}
+#the random # seed
+set.seed(7060)
+
+#randomly select n samples 
+#chr1_half_parsed <- pheno[, sample(ncol(pheno), (0.5*num_chr1))]
+chr1_half_parsed <- pheno[sample(nrow(pheno), (0.5*num_chr1)),]
+
+write.table(chr1_half_parsed, "/home/memery/GWAS_pipeline/ref_files_GWAS1001/hapmap_rand/Chr1_rand_50percent.hmp.txt", quote=F, sep="\t", row.names=F)
+
+
+```
+
+
