@@ -1,2 +1,2 @@
 # Lab_basics
- Commonly used scripts in the Angelovici Lab
+ Commonly used, basic scripts that are good to have on hand
