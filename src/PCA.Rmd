@@ -22,7 +22,7 @@ library(pls)
 library(knitr)
 library(grid)
 library(gridExtra)
-
+library(ggfortify)
 
 ```
 
@@ -34,7 +34,6 @@ dat <- read.csv(file = file.path(folder_path, "1001_Arabidopsis/data_removed_48_
 ```
 
 ## Multiple regression makes a composite variable
-
 ```{r echo=FALSE, warning = FALSE}
 faa_dat <- dat
 M <- faa_dat %>% 
@@ -61,6 +60,38 @@ str(FAA_pca)
 PC <- data.frame(pc1 = FAA_pca$x[, 1], pc2 = FAA_pca$x[, 2])
 
 write.csv(PC, file= "Arabidopsis_1001_FAA_bcaa_fam_PC1_PC2.csv")
+
+#view PC scores
+fviz_eig(FAA_pca)
+
+
+
+#---------------
+#PCA
+# Open a pdf file
+pdf("~/filename.pdf")
+
+autoplot(FAA_pca, data = faa_dat, colour = 'population')
+
+# Close the pdf file
+dev.off()
+
+
+
+
+#---------------
+#Biplot
+# Open a pdf file
+pdf("~/filename.pdf")
+
+#biplot
+autoplot(FAA_pca, data = faa_dat, colour = 'population',
+         loadings = TRUE, loadings.colour = 'blue',
+         loadings.label = TRUE, loadings.label.size = 3)
+
+# Close the pdf file
+dev.off()
+
 
 ```
 
